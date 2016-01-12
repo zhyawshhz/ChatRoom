@@ -1,17 +1,126 @@
-#ifndef No1_Log_Log_h
-#define No1_Log_Log_h
+/*
+ * Log.h
+ *
+ *  Created on: Jan 12, 2016
+ *      Author: brian
+ */
 
-#include "Log/Init.h"
+#ifndef CHATROOM_LOG_LOG_H_
+#define CHATROOM_LOG_LOG_H_
 
-#if !defined NO1_GLOBAL_LOG
-#	define NO1_GLOBAL_LOG(l, m) 				\
-		BOOST_LOG_SEV(logger::get(), l) << m
-#endif
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/sources/severity_feature.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/utility/manipulators/add_value.hpp>
+#include <boost/log/attributes/named_scope.hpp>
+#include <boost/log/attributes/attribute_set.hpp>
+#include <boost/log/attributes/scoped_attribute.hpp>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <boost/log/common.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/attributes.hpp>
+#include <boost/log/sinks.hpp>
+#include <boost/log/utility/setup/from_stream.hpp>
+#include <boost/log/utility/setup.hpp>
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_multifile_backend.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sinks/unlocked_frontend.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/date_time.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/thread/thread.hpp>
 
-#if !defined NO1_CLASS_LOG
-#	define NO1_CLASS_LOG(l, m)					\
-		BOOST_LOG_SEV(this->get_logger(), l) << m
-#endif
+namespace logging = boost::log;
+namespace attrs = boost::log::attributes;
+namespace sinks = boost::log::sinks;
+namespace src = boost::log::sources;
+namespace expr = boost::log::expressions;
+namespace keywords = boost::log::keywords;
 
 
-#endif
+BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
+
+class No1Log
+{
+public:
+	typedef sinks::synchronous_sink<sinks::text_file_backend> TextSink;
+
+public:
+	No1Log(){}
+	~No1Log(){}
+
+	static void init_log_file()
+	{
+		boost::shared_ptr<sinks::text_file_backend> backend = boost::make_shared<sinks::text_file_backend>(
+			keywords::file_name = "log/log_%Y-%m-%d_%H-%M-%S.%N.log",
+			keywords::rotation_size = 100 * 1024 * 1024,
+			keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
+			keywords::min_free_space = 30 * 1024 * 1024
+		);
+
+		backend->set_file_collector(sinks::file::make_collector(
+				keywords::target = "log/log_back",
+				keywords::max_size = 30 * 1024 * 1024 * 1024,
+				keywords::min_free_space = 10 * 1024 * 1024 * 1024
+		));
+
+		backend->scan_for_files(sinks::file::scan_all);
+		backend->auto_flush(true);
+
+		boost::shared_ptr<TextSink> sink = boost::make_shared<TextSink>(backend);
+
+		sink->set_formatter(
+			expr::stream
+			<< "<" << expr::attr<logging::trivial::severity_level>("Severity") << ">"
+			//<< expr::format_date_time(timestamp, "%H%M%S.%f%Q")
+			<< " "
+			<< expr::message
+		);
+
+		logging::core::get()->add_sink(sink);
+	}
+
+	static void init_log_console()
+	{
+		logging::add_console_log(
+			std::cout,
+			keywords::format = (
+				expr::stream
+				<< "<" << expr::attr<logging::trivial::severity_level>("Severity") << ">"
+				<< " " << expr::message
+			)
+		);
+	}
+
+	static void init_log(const bool logtofile, const bool logtoconsole, const int level)
+	{
+		if (logtofile)
+		{
+			init_log_file();
+		}
+
+		if (logtoconsole)
+		{
+			init_log_console();
+		}
+
+		boost::shared_ptr<boost::log::core> core = boost::log::core::get();
+		core->set_logging_enabled(true);
+		core->set_filter(expr::attr<logging::trivial::severity_level> <= static_cast<logging::trivial::severity_level>(level));
+		logging::add_common_attributes();
+	}
+
+};
+
+BOOST_LOG_GLOBAL_LOGGER_DEFAULT(g_logger, boost::log::sources::severity_logger<boost::log::trivial::severity_level>);
+
+
+
+#endif /* CHATROOM_LOG_LOG_H_ */

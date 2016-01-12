@@ -1,3 +1,5 @@
+// Modified By Brian Zhang
+// 01/06/2016
 #include <iostream>
 #include "Log/Log.h"
 #include "Log/TestLog.h"
