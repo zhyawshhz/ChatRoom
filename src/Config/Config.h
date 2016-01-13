@@ -1,16 +1,28 @@
-/*
- * Config.h
- *
- *  Created on: Jan 12, 2016
- *      Author: brian
- */
+#ifndef CHATROOM_CONFIG_CONFIG_H
+#define CHATROOM_CONFIG_CONFIG_H
+#include <cstdint>
+class No1Config
+{
+private:
+	No1Config();
+public:
+	~No1Config();
+	
+	static No1Config* get_instance();
 
-#ifndef CHATROOM_CONFIG_CONFIG_H_
-#define CHATROOM_CONFIG_CONFIG_H_
+	bool parse();
+
+	int get_server_port()const{return m_port;}
+	int get_log_level()const{return m_level;}
+	bool get_log_toconsole()const {return m_toconsole;}
+	bool get_log_tofile()const{return m_tofile;}
 
 
+	int						m_port;
+	int						m_level;
+	bool					m_tofile;
+	bool					m_toconsole;
+	static No1Config*		m_instance;
+};
 
-
-
-
-#endif /* CHATROOM_CONFIG_CONFIG_H_ */
+#endif

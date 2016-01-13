@@ -8,6 +8,11 @@
 #ifndef CHATROOM_LOG_LOG_H_
 #define CHATROOM_LOG_LOG_H_
 
+
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/sources/severity_feature.hpp>
 #include <boost/log/sources/severity_logger.hpp>
@@ -76,12 +81,12 @@ public:
 
 		boost::shared_ptr<TextSink> sink = boost::make_shared<TextSink>(backend);
 
-		sink->set_formatter(
-			expr::stream
-			<< "<" << expr::attr<logging::trivial::severity_level>("Severity") << ">"
-			//<< expr::format_date_time(timestamp, "%H%M%S.%f%Q")
-			<< " "
-			<< expr::message
+		sink->set_formatter
+		(
+			expr::format("<%1%> %2% %3%")
+			% expr::attr<logging::trivial::severity_level>("Severity")
+			% expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S")
+			% expr::message
 		);
 
 		logging::core::get()->add_sink(sink);
@@ -89,12 +94,15 @@ public:
 
 	static void init_log_console()
 	{
-		logging::add_console_log(
+		logging::add_console_log
+		(
 			std::cout,
-			keywords::format = (
-				expr::stream
-				<< "<" << expr::attr<logging::trivial::severity_level>("Severity") << ">"
-				<< " " << expr::message
+			keywords::format =
+			(
+				expr::format("<%1%> %2% %3%")
+				% expr::attr<logging::trivial::severity_level>("Severity")
+				% expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S")
+				% expr::message
 			)
 		);
 	}
@@ -119,8 +127,30 @@ public:
 
 };
 
-BOOST_LOG_GLOBAL_LOGGER_DEFAULT(g_logger, boost::log::sources::severity_logger<boost::log::trivial::severity_level>);
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(g_logger, boost::log::sources::severity_logger<boost::log::trivial::severity_level>);
 
+
+#ifndef GLOBAL_LOG_SEV
+#define GLOBAL_LOG_SEV(level, msg)	\
+		BOOST_LOG_SEV(g_logger::get(), boost::log::trivial::severity_level::level) << msg
+#endif
+
+
+#ifndef MAIN_LOG_ENTRY
+#define MAIN_LOG_ENTRY()      									\
+	struct MainLogEntry											\
+	{															\
+		MainLogEntry()											\
+		{														\
+			boost::filesystem::path::imbue(std::locale("C"));	\
+		}														\
+																\
+		~ MainLogEntry()										\
+		{														\
+			 boost::log::core::get()->remove_all_sinks();		\
+		}														\
+	}log_entry;
+#endif
 
 
 #endif /* CHATROOM_LOG_LOG_H_ */

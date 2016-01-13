@@ -1,14 +1,16 @@
 #include "Thread/Thread.h"
+#include "Log/Log.h"
 
-No1Thread::No1Thread(const int id, void*(start_func)(void*), boost::shared_ptr<No1ThrdObj> obj)
+#include <pthread.h>
+
+No1Thread::No1Thread(const int id, const boost::shared_ptr<No1ThrdObj> obj)
 :
- mProcObj(obj)
-,mId(id)
-,mProcFunc(start_func)
+m_proc_obj(obj)
+,m_id(id)
 {
-	if (pthread_create(&mThrdId, NULL, threadFunc, NULL) != 0)
+	if (pthread_create(&m_thrd_id, NULL, threadFunc, NULL) != 0)
 	{
-		NO1_CLASS_LOG(error, "Failed to create thread: " << strerror(errno));
+		GLOBAL_LOG_SEV(error, "Failed to create thread: " << strerror(errno));
 		return;
 	}
 }
@@ -20,16 +22,22 @@ No1Thread::~No1Thread()
 void*
 No1Thread::threadFunc(void* args)
 {
-	if (mProcObj) mProcObj->threadFunc();
+	if (m_proc_obj)
+	{
+		m_proc_obj->threadFunc();
+	}else{
+		GLOBAL_LOG_SEV(error, "NO PROC OBJ: " << m_thrd_id);
+		return NULL;
+	}
 }
 
 void
 No1Thread::join()
 {
 	void* res;
-	if (pthread_join(mThrdId, &res) != 0)
+	if (pthread_join(m_thrd_id, &res) != 0)
 	{
-		NO1_CLASS_LOG(error, "Failed to join thread: " << strerror(errno));
+		GLOBAL_LOG_SEV(error, "Failed to join thread: "<< strerror(errno));
 		return;
 	}
 }
@@ -37,9 +45,9 @@ No1Thread::join()
 void
 No1Thread::cancel()
 {
-	if (pthread_cancel(mThrdId) != 0)
+	if (pthread_cancel(m_thrd_id) != 0)
 	{
-		NO1_CLASS_LOG(error, "Failed to cancel thread: " << mThrd);
+		GLOBAL_LOG_SEV(error, "Failed to cancel thread: " << strerror(errno));
 		return;
 	}
 }
