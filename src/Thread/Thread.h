@@ -13,8 +13,8 @@ public:
 
 private:
 	static void* threadFunc(void* args);
-	void join();
-	void cancel();
+	bool join();
+	bool cancel();
 
 private:
 	int										m_id;

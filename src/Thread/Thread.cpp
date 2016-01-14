@@ -31,23 +31,26 @@ No1Thread::threadFunc(void* args)
 	}
 }
 
-void
+bool
 No1Thread::join()
 {
 	void* res;
 	if (pthread_join(m_thrd_id, &res) != 0)
 	{
 		GLOBAL_LOG_SEV(error, "Failed to join thread: "<< strerror(errno));
-		return;
+		return false;
 	}
+	return true;
 }
 
-void
+
+bool
 No1Thread::cancel()
 {
 	if (pthread_cancel(m_thrd_id) != 0)
 	{
 		GLOBAL_LOG_SEV(error, "Failed to cancel thread: " << strerror(errno));
-		return;
+		return false;
 	}
+	return true;
 }
