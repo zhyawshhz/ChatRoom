@@ -107,21 +107,21 @@ public:
 		);
 	}
 
-	static void init_log(const bool logtofile, const bool logtoconsole, const int level)
+	static void init_log()
 	{
-		if (logtofile)
+		if (No1Config::get_instance()->get_log_tofile())
 		{
 			init_log_file();
 		}
 
-		if (logtoconsole)
+		if (No1Config::get_instance()->get_log_toconsole())
 		{
 			init_log_console();
 		}
 
 		boost::shared_ptr<boost::log::core> core = boost::log::core::get();
 		core->set_logging_enabled(true);
-		core->set_filter(expr::attr<logging::trivial::severity_level> <= static_cast<logging::trivial::severity_level>(level));
+		core->set_filter(expr::attr<logging::trivial::severity_level> <= static_cast<logging::trivial::severity_level>(No1Config::get_instance()->get_log_level()));
 		logging::add_common_attributes();
 	}
 

@@ -91,5 +91,12 @@ No1Config::parse()
 		m_toconsole = vm["log.log_toconsole"].as<std::string>() == "true";
 	}
 
+
+	if (vm.count("thread.handle_thrd_num"))
+	{
+		m_handle_thrd_num = vm["thread.handle_thrd_num"].as<int>();
+	}
+
+
 	return true;
 }

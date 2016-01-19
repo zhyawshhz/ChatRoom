@@ -1,0 +1,19 @@
+// Created By Brian Zhang
+// 01/15/2016
+
+//   bodylen|funcid|body
+
+// login funcid 0x0001
+message login_req
+{
+	required string login_name 			= 1; //login name, must unique in system
+	required string password			= 2; // password
+	
+}
+
+// funcid
+message msg
+{
+	required string msg 		= 1; // message contents
+	optional string username	= 2; // user name	
+}

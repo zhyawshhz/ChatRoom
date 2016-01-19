@@ -2,8 +2,8 @@
 // 01/06/2016
 #include <iostream>
 
-#include "../Config/Config.h"
-#include "../Network/EpollServer.h"
+#include "Config/Config.h"
+#include "Network/EpollServer.h"
 #include "Log/Log.h"
 
 int main(int argc, char** argv)

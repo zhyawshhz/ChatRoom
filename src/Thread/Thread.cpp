@@ -24,11 +24,12 @@ No1Thread::threadFunc(void* args)
 {
 	if (m_proc_obj)
 	{
-		m_proc_obj->threadFunc();
+		return m_proc_obj->threadFunc();
 	}else{
 		GLOBAL_LOG_SEV(error, "NO PROC OBJ: " << m_thrd_id);
 		return NULL;
 	}
+	return NULL;
 }
 
 bool

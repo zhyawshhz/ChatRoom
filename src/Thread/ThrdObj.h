@@ -3,6 +3,6 @@
 
 class No1ThrdObj
 {
-	virtual bool threadFunc() = 0;
+	virtual bool threadFunc(const int id) = 0;
 };
 #endif
