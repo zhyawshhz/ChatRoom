@@ -35,18 +35,21 @@ No1ServerSession::proc()
 	while (true)
 	{
 		int size = ::read(m_sock_fd, m_buffer + m_body_len, 1024);
-		if (size < 0)
+		if (size  == -1)
 		{
-			if (errno == EINTR)
-			{// interupt
-				return handle_msg();
-			}else{
-				return dis_connect();
+			if (errno == EAGAIN)
+			{
+				handle_msg();
+				return true;
+			} else {
+				dis_connect();
+				return false;
 			}
 		}else if (size == 0){
-			return handle_msg();
-		}else{
+			dis_connect();
+		} else {
 			m_body_len += size;
+			continue;
 		}
 	}
 	return false;
@@ -56,17 +59,22 @@ No1ServerSession::proc()
 bool
 No1ServerSession::handle_msg()
 {
-	while (true)
+	int idx = 0;
+	while (idx < m_body_len)
 	{
-		int bodylen = *((int*)m_buffer);
+		int bodylen = *((int*)(m_buffer+idx));
 		if (bodylen < 0)
 		{
 			GLOBAL_LOG_SEV(error, "BodyLen is error: " << m_addr << ", " << m_port);
-			return dis_connect();
+			memset(m_buffer, 0, m_body_len - idx);
+			return false;
 		}else if (bodylen == 0){
 			handle_heartbeat();
 		}else{
-
+			msg mm = msg();
+			mm.ParseFromArray(m_buffer+idx+8, bodylen);
+			idx +=(8+bodylen);
+			m_server->add_msg(mm);
 		}
 	}
 	return true;
@@ -80,3 +88,15 @@ No1ServerSession::dis_connect()
 }
 
 
+void
+No1ServerSession::set_server(const No1EpollServer* server)
+{
+	m_server = server;
+}
+
+
+bool
+No1ServerSession::send_msg(const char* buffer, const int len)
+{
+	return true;
+}

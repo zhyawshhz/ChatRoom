@@ -17,6 +17,8 @@ public:
 public:
 	bool 				proc();
 	bool				dis_connect();
+	bool				send_msg(const char* buffer, const int len);
+	void 				set_server(const No1EpollServer* server);
 
 private:
 	bool				handle_msg();
@@ -28,6 +30,7 @@ private:
 	int					m_port;
 	int					m_body_len;
 	char* 				m_buffer;
+	No1EpollServer*		m_server;
 };
 
 

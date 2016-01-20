@@ -30,6 +30,7 @@ public:
 	void start();
 	void stop();
 	bool threadFunc(const int id);
+	void add_msg(const msg &mm);
 
 private:
 	bool init();
@@ -46,7 +47,10 @@ private:
 	int													m_port;
 	char*												m_buffer;
 	bool 												m_stop;
+	std::queue<msg>										m_read_msgs;
+	std::map<int, msg>									m_send_msgs;
 	boost::shared_ptr<No1Lock>							m_lock;
+	boost::shared_ptr<No1CondVar>						m_cond_var;
 	std::vector<No1Thread>								m_thrds;
 	boost::object_pool<Request>							m_obj_pool;
 	std::map<int, boost::shared_ptr<No1ServerSession> >	m_sessions;

@@ -15,6 +15,8 @@ No1EpollServer::No1EpollServer()
 :
 m_port(-1)
 , m_stop(true)
+, m_lock(boost::make_shared<No1Lock>())
+, m_cond_var(boost::make_shared<No1CondVar>())
 {
 	m_sessions.clear();
 	m_port = No1Config::get_instance()->get_server_port();
@@ -170,55 +172,72 @@ No1EpollServer::proc_recv_client()
 
 		for (int i=0; i<num; ++i)
 		{
-			if (events[i].data.fd == m_sock_fd)
-			{// accept new client
-				socklen_t len;
-				struct sockaddr_in client_addr;
-				int cfd = accept(m_sock_fd, (struct sockaddr*)(&client_addr), &len);
-				if (cfd < 0)
+			if ((events[i].events & EPOLLERR) ||
+				(events[i].events & EPOLLHUP))
+			{
+				GLOBAL_LOG_SEV(error, "this socket occured error: " << events[i].data.fd);
+				close(events[i].data.fd);
+				continue;
+			}else if (events[i].data.fd == m_sock_fd){// accept new client
+				while (true)
 				{
-					GLOBAL_LOG_SEV(error, "Failed to accept client socket: " << strerror(errno));
-					continue;
-				}
+					socklen_t len;
+					struct sockaddr_in client_addr;
+					int cfd = ::accept(m_sock_fd, (struct sockaddr*)(&client_addr), &len);
+					if (cfd < 0)
+					{
+						if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
+						{
+							break;
+						}else{
+							GLOBAL_LOG_SEV(error, "accept error!!!");
+						}
+					}
 
-				GLOBAL_LOG_SEV(info, "RecvClient: " << inet_ntoa(client_addr.sin_addr) << ", " << ntohs(client_addr.sin_port));
+					GLOBAL_LOG_SEV(info, "RecvClient: " << inet_ntoa(client_addr.sin_addr) << ", " << ntohs(client_addr.sin_port));
 				
-				if (!set_noblock(cfd))
-				{
-					GLOBAL_LOG_SEV(error, "Failed to set socket nonblock: " << cfd << " : " << strerror(errno));
-					close(cfd);
-					continue;
-				}
+					if (!set_noblock(cfd))
+					{
+						GLOBAL_LOG_SEV(error, "Failed to set socket nonblock: " << cfd << " : " << strerror(errno));
+						close(cfd);
+						continue;
+					}
 				
-				ev.data.fd = cfd;
-				ev.events = EPOLLIN | EPOLLET;
-				if (epoll_ctl(m_epoll_id, EPOLL_CTL_ADD, cfd, &ev) < 0)
-				{
-					GLOBAL_LOG_SEV(error, "Failed to add socket to epoll events: " << cfd << ", " << strerror(errno));
-					close(cfd);
-					continue;
+					ev.data.fd = cfd;
+					ev.events = EPOLLIN | EPOLLET;
+					if (epoll_ctl(m_epoll_id, EPOLL_CTL_ADD, cfd, &ev) < 0)
+					{
+						GLOBAL_LOG_SEV(error, "Failed to add socket to epoll events: " << cfd << ", " << strerror(errno));
+						close(cfd);
+						continue;
+					}
+
+					m_lock->lock();
+					boost::shared_ptr<No1ServerSession> sptr = boost::make_shared<No1ServerSession>(cfd, client_addr.sin_addr, client_addr.sin_port);
+					sptr->set_server(this);
+					m_sessions[cfd]= sptr;
+					m_lock->unlock();
 				}
+				continue;
+			} else if (events[i].events & EPOLLIN){
+				int cfd = events[i].data.fd;
 
 				m_lock->lock();
-				m_sessions[cfd] = boost::make_shared<No1ServerSession>(cfd, client_addr.sin_addr, client_addr.sin_port);
-				m_lock->unlock();
+				auto itr = m_sessions.find(cfd);
+				if (itr == m_sessions.end())
+				{
+					GLOBAL_LOG_SEV(error, "Not Found In Cache: " << cfd);
+					m_lock->unlock();
+					continue;
+				}
 
+				itr->second->proc();
+				m_lock->unlock();
+			} else if (events[i].events & EPOLLOUT){
+
+			} else {
 				continue;
 			}
-			
-			int cfd = events[i].data.fd;
-
-			m_lock->lock();
-			auto itr = m_sessions.find(cfd);
-			if (itr == m_sessions.end())
-			{
-				GLOBAL_LOG_SEV(error, "Not Found In Cache: " << cfd);
-				m_lock->unlock();
-				continue;
-			}
-
-			itr->second->proc();
-			m_lock->unlock();
 		}
 	}
 	return false;
@@ -239,5 +258,38 @@ No1EpollServer::start()
 		GLOBAL_LOG_SEV(error, "Failed to init thread!!!");
 		release();
 		return;
+	}
+}
+
+
+void
+No1EpollServer::add_msg(const msg &mm)
+{
+	m_read_msgs.push(mm);
+	m_cond_var->signal();
+}
+
+
+bool
+No1EpollServer::proc_msg()
+{
+	while (true)
+	{
+		m_lock->lock();
+		if (m_read_msgs.empty())
+		{
+			m_cond_var->wait(*m_lock);
+			m_lock->unlock();
+			continue;
+		}
+		msg mm = m_read_msgs.front();
+		char buffer[mm.ByteSize()];
+		mm.SerializeToArray(buffer, mm.ByteSize());
+		for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++ itr)
+		{
+			itr->second->send_msg(buffer, mm.ByteSize());
+		}
+		m_read_msgs.pop();
+		m_lock->unlock();
 	}
 }
