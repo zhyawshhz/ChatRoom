@@ -29,8 +29,10 @@ public:
 	static No1EpollServer* get_instance();
 	void start();
 	void stop();
+
 	bool threadFunc(const int id);
 	void add_msg(const msg &mm);
+	bool remove_session(const int sockfd);
 
 private:
 	bool init();

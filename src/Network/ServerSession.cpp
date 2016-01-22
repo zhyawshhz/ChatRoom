@@ -11,30 +11,44 @@
 #include "Util/NetworkUtil.h"
 #include "proto/protocol.pb.h"
 
+#include <string.h>
+
 
 No1ServerSession::No1ServerSession(const int sockfd, const std::string &addr, const int port)
 : m_sock_fd(sockfd)
 , m_addr(addr)
 , m_port(port)
-, m_body_len(0)
-, m_buffer(NULL)
+, m_recv_len(0)
+, m_send_len(0)
+, m_recv_buffer(NULL)
+, m_send_buffer(NULL)
 {
-	m_buffer = new char[8*1024];
+	m_recv_buffer = new char[kBufferLen];
+	m_send_buffer = new char[kBufferLen];
 }
 
 
 No1ServerSession::~No1ServerSession()
 {
-	if (m_buffer) delete[] m_buffer;
+	if (m_recv_buffer) delete[] m_recv_buffer;
+	if (m_send_buffer) delete[] m_send_buffer;
 }
 
 
 bool
-No1ServerSession::proc()
+No1ServerSession::recv_msg()
 {
 	while (true)
 	{
-		int size = ::read(m_sock_fd, m_buffer + m_body_len, 1024);
+		if (static_cast<int>(kBufferLen) - m_recv_len < static_cast<int>(kPerReadSize))
+		{
+			char* buffer = new char [2 * m_recv_len];
+			memcpy(buffer, m_recv_buffer, m_recv_len);
+			delete[] m_recv_buffer;
+			m_recv_buffer = buffer;
+		}
+
+		int size = ::read(m_sock_fd, m_recv_buffer + m_recv_len, static_cast<int>(kPerReadSize));
 		if (size  == -1)
 		{
 			if (errno == EAGAIN)
@@ -48,7 +62,7 @@ No1ServerSession::proc()
 		}else if (size == 0){
 			dis_connect();
 		} else {
-			m_body_len += size;
+			m_recv_len += size;
 			continue;
 		}
 	}
@@ -60,19 +74,19 @@ bool
 No1ServerSession::handle_msg()
 {
 	int idx = 0;
-	while (idx < m_body_len)
+	while (idx < m_recv_len)
 	{
-		int bodylen = *((int*)(m_buffer+idx));
+		int bodylen = *((int*)(m_recv_buffer+idx));
 		if (bodylen < 0)
 		{
 			GLOBAL_LOG_SEV(error, "BodyLen is error: " << m_addr << ", " << m_port);
-			memset(m_buffer, 0, m_body_len - idx);
+			memset(m_recv_buffer, 0, m_recv_len - idx);
 			return false;
 		}else if (bodylen == 0){
 			handle_heartbeat();
 		}else{
 			msg mm = msg();
-			mm.ParseFromArray(m_buffer+idx+8, bodylen);
+			mm.ParseFromArray(m_recv_buffer+idx+8, bodylen);
 			idx +=(8+bodylen);
 			m_server->add_msg(mm);
 		}
@@ -84,6 +98,8 @@ No1ServerSession::handle_msg()
 bool
 No1ServerSession::dis_connect()
 {
+	m_server->remove_session(m_sock_fd);
+	GLOBAL_LOG_SEV(info, "disconnect: " << m_addr << ", " << m_port);
 	return true;
 }
 
@@ -96,7 +112,43 @@ No1ServerSession::set_server(const No1EpollServer* server)
 
 
 bool
-No1ServerSession::send_msg(const char* buffer, const int len)
+No1ServerSession::add_msg(const char* buffer, const int len)
 {
+	if (m_send_len + len > static_cast<int>(kBufferLen))
+	{
+		char* temp_buffer = new char[2 * (m_send_len + len)];
+		memcpy(temp_buffer, m_send_buffer, m_send_len);
+		delete[] m_send_buffer;
+		m_send_buffer = temp_buffer;
+	}
+	memcpy(m_send_buffer, buffer, len);
+	m_send_len += len;
 	return true;
 }
+
+
+bool
+No1ServerSession::send_msg()
+{
+	int idx = 0;
+	while (idx < m_send_len)
+	{
+		int size = ::write(m_sock_fd, m_send_buffer + idx, kPerReadSize);
+		if (size == -1)
+		{
+			if (errno == EAGAIN)
+			{
+				sleep(1);
+				continue;
+			} else {
+				dis_connect();
+			}
+		} else if (size == 0) {
+			dis_connect();
+		} else {
+			idx += size;
+		}
+	}
+	return true;
+}
+

@@ -231,10 +231,32 @@ No1EpollServer::proc_recv_client()
 					continue;
 				}
 
-				itr->second->proc();
+				itr->second->recv_msg();
 				m_lock->unlock();
 			} else if (events[i].events & EPOLLOUT){
+				int cfd = events[i].data.fd;
 
+				m_lock->lock();
+				auto itr = m_sessions.find(cfd);
+				if (itr == m_sessions.end())
+				{
+					GLOBAL_LOG_SEV(error, "Not Found In Cache: " << cfd);
+					m_lock->unlock();
+					continue;
+				}
+
+				itr->second->send_msg();
+
+				struct epoll_event ev;
+				ev.data.fd = itr->first;
+				ev.events = EPOLLIN;
+				if (epoll_ctl(m_epoll_id, EPOLL_CTL_MOD, itr->first, &ev) < 0)
+				{
+					GLOBAL_LOG_SEV(error, "Failed to add read event to epoll: " << itr->first);
+					m_lock->unlock();
+					continue;
+				}
+				m_lock->unlock();
 			} else {
 				continue;
 			}
@@ -287,9 +309,28 @@ No1EpollServer::proc_msg()
 		mm.SerializeToArray(buffer, mm.ByteSize());
 		for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++ itr)
 		{
-			itr->second->send_msg(buffer, mm.ByteSize());
+			struct epoll_event ev;
+			ev.data.fd = itr->first;
+			ev.events = EPOLLOUT;
+			if (epoll_ctl(m_epoll_id, EPOLL_CTL_MOD, itr->first, &ev) < 0)
+			{
+				GLOBAL_LOG_SEV(error, "Failed to add send event to epoll: " << itr->first);
+				continue;
+			}
+
+			itr->second->add_msg(buffer, mm.ByteSize());
 		}
 		m_read_msgs.pop();
 		m_lock->unlock();
 	}
+}
+
+
+bool
+No1EpollServer::remove_session(const int sockfd)
+{
+	auto itr = m_sessions.find(sockfd);
+	if (itr != m_sessions.end()) return false;
+	m_sessions.erase(itr);
+	return true;
 }
