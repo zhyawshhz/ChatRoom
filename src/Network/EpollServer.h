@@ -39,7 +39,7 @@ private:
 	bool init_thrds();
 	void release();
 	bool proc_msg();
-	bool proc_recv_client();
+	bool proc_client();
 
 
 private:
@@ -47,14 +47,11 @@ private:
 	int													m_sock_fd;
 	int													m_epoll_id;
 	int													m_port;
-	char*												m_buffer;
 	bool 												m_stop;
 	std::queue<msg>										m_read_msgs;
-	std::map<int, msg>									m_send_msgs;
 	boost::shared_ptr<No1Lock>							m_lock;
 	boost::shared_ptr<No1CondVar>						m_cond_var;
 	std::vector<No1Thread>								m_thrds;
-	boost::object_pool<Request>							m_obj_pool;
 	std::map<int, boost::shared_ptr<No1ServerSession> >	m_sessions;
 	static No1EpollServer*								m_instance;
 };

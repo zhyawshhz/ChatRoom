@@ -22,6 +22,7 @@ No1ServerSession::No1ServerSession(const int sockfd, const std::string &addr, co
 , m_send_len(0)
 , m_recv_buffer(NULL)
 , m_send_buffer(NULL)
+, m_server(NULL)
 {
 	m_recv_buffer = new char[kBufferLen];
 	m_send_buffer = new char[kBufferLen];
@@ -56,11 +57,11 @@ No1ServerSession::recv_msg()
 				handle_msg();
 				return true;
 			} else {
-				dis_connect();
+				disconnect();
 				return false;
 			}
 		}else if (size == 0){
-			dis_connect();
+			disconnect();
 		} else {
 			m_recv_len += size;
 			continue;
@@ -96,7 +97,7 @@ No1ServerSession::handle_msg()
 
 
 bool
-No1ServerSession::dis_connect()
+No1ServerSession::disconnect()
 {
 	m_server->remove_session(m_sock_fd);
 	GLOBAL_LOG_SEV(info, "disconnect: " << m_addr << ", " << m_port);
@@ -141,10 +142,10 @@ No1ServerSession::send_msg()
 				sleep(1);
 				continue;
 			} else {
-				dis_connect();
+				disconnect();
 			}
 		} else if (size == 0) {
-			dis_connect();
+			disconnect();
 		} else {
 			idx += size;
 		}

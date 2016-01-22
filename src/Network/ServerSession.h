@@ -24,7 +24,7 @@ public:
 public:
 	bool 				recv_msg();
 	bool				send_msg();
-	bool				dis_connect();
+	bool				disconnect();
 	bool				add_msg(const char* buffer, const int len);
 	void 				set_server(const No1EpollServer* server);
 

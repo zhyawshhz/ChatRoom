@@ -46,14 +46,14 @@ bool
 No1EpollServer::init()
 {
 	// set max open file per process
-	if (!set_max_open_file(kMaxHandleSize))
+	if (!set_max_open_file(static_cast<int>(kMaxHandleSize)))
 	{
 		GLOBAL_LOG_SEV(error, "Failed to set process max file!!!");
 		return false;
 	}
 
 	// create epoll
-	m_epoll_id = epoll_create(kMaxHandleSize);
+	m_epoll_id = epoll_create(static_cast<int>(kMaxHandleSize));
 	if (m_epoll_id < 0)
 	{
 		GLOBAL_LOG_SEV(error, "Failed to create epoll: " << strerror(errno));
@@ -108,7 +108,7 @@ No1EpollServer::init()
 	ev.data.fd = m_sock_fd;
 	if (epoll_ctl(m_epoll_id, EPOLL_CTL_ADD, m_sock_fd, &ev) < 0)
 	{
-		GLOBAL_LOG_SEV(error, "Failed to add mSockFd to epoll set: " << strerror(errno));
+		GLOBAL_LOG_SEV(error, "Failed to add socket to epoll set: " << strerror(errno));
 		return false;
 	}
 	
@@ -122,8 +122,8 @@ No1EpollServer::init_thrds()
 	int thrd_num = No1Config::get_instance()->get_handle_thrd_num();
 	for (int i=0; i<thrd_num+1; ++i)
 	{
-		No1Thread t(i, this);
-		m_thrds.push_back(t);
+		No1Thread thrd(i, this);
+		m_thrds.push_back(thrd);
 	}
 	return true;
 }
@@ -141,7 +141,7 @@ No1EpollServer::threadFunc(const int id)
 {
 	if (id == 0)
 	{
-		return proc_recv_client();
+		return proc_client();
 	}
 
 	return proc_msg();
@@ -156,7 +156,7 @@ No1EpollServer::proc_msg()
 
 
 bool
-No1EpollServer::proc_recv_client()
+No1EpollServer::proc_client()
 {
 	int num;
 	struct epoll_event ev;
@@ -213,7 +213,7 @@ No1EpollServer::proc_recv_client()
 					}
 
 					m_lock->lock();
-					boost::shared_ptr<No1ServerSession> sptr = boost::make_shared<No1ServerSession>(cfd, client_addr.sin_addr, client_addr.sin_port);
+					boost::shared_ptr<No1ServerSession> sptr = boost::make_shared<No1ServerSession>(cfd, inet_ntoa(client_addr.sin_addr), client_addr.sin_port);
 					sptr->set_server(this);
 					m_sessions[cfd]= sptr;
 					m_lock->unlock();
