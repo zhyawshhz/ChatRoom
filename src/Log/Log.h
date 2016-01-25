@@ -42,6 +42,8 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/thread/thread.hpp>
 
+#include "Config/Config.h"
+
 namespace logging = boost::log;
 namespace attrs = boost::log::attributes;
 namespace sinks = boost::log::sinks;

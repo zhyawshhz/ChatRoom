@@ -10,6 +10,7 @@
 
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <sys/resource.h>
 
 
 bool set_max_open_file(const int file_num)

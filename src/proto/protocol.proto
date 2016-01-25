@@ -12,7 +12,7 @@ message login_req
 }
 
 // funcid
-message msg
+message No1Request
 {
 	required string msg 		= 1; // message contents
 	optional string username	= 2; // user name	

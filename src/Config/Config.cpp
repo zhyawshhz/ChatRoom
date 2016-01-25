@@ -98,5 +98,11 @@ No1Config::parse()
 	}
 
 
+	if (vm.count("process.process_num"))
+	{
+		m_process_num = vm["process.process_num"].as<int>();
+	}
+
+
 	return true;
 }

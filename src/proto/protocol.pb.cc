@@ -21,9 +21,9 @@ namespace {
 const ::google::protobuf::Descriptor* login_req_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   login_req_reflection_ = NULL;
-const ::google::protobuf::Descriptor* msg_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* No1Request_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  msg_reflection_ = NULL;
+  No1Request_reflection_ = NULL;
 
 }  // namespace
 
@@ -50,22 +50,22 @@ void protobuf_AssignDesc_protocol_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(login_req));
-  msg_descriptor_ = file->message_type(1);
-  static const int msg_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(msg, msg_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(msg, username_),
+  No1Request_descriptor_ = file->message_type(1);
+  static const int No1Request_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(No1Request, msg_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(No1Request, username_),
   };
-  msg_reflection_ =
+  No1Request_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      msg_descriptor_,
-      msg::default_instance_,
-      msg_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(msg, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(msg, _unknown_fields_),
+      No1Request_descriptor_,
+      No1Request::default_instance_,
+      No1Request_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(No1Request, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(No1Request, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(msg));
+      sizeof(No1Request));
 }
 
 namespace {
@@ -81,7 +81,7 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     login_req_descriptor_, &login_req::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    msg_descriptor_, &msg::default_instance());
+    No1Request_descriptor_, &No1Request::default_instance());
 }
 
 }  // namespace
@@ -89,8 +89,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_protocol_2eproto() {
   delete login_req::default_instance_;
   delete login_req_reflection_;
-  delete msg::default_instance_;
-  delete msg_reflection_;
+  delete No1Request::default_instance_;
+  delete No1Request_reflection_;
 }
 
 void protobuf_AddDesc_protocol_2eproto() {
@@ -101,14 +101,14 @@ void protobuf_AddDesc_protocol_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\016protocol.proto\"1\n\tlogin_req\022\022\n\nlogin_n"
-    "ame\030\001 \002(\t\022\020\n\010password\030\002 \002(\t\"$\n\003msg\022\013\n\003ms"
-    "g\030\001 \002(\t\022\020\n\010username\030\002 \001(\t", 105);
+    "ame\030\001 \002(\t\022\020\n\010password\030\002 \002(\t\"+\n\nNo1Reques"
+    "t\022\013\n\003msg\030\001 \002(\t\022\020\n\010username\030\002 \001(\t", 112);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   login_req::default_instance_ = new login_req();
-  msg::default_instance_ = new msg();
+  No1Request::default_instance_ = new No1Request();
   login_req::default_instance_->InitAsDefaultInstance();
-  msg::default_instance_->InitAsDefaultInstance();
+  No1Request::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_protocol_2eproto);
 }
 
@@ -405,36 +405,36 @@ void login_req::Swap(login_req* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int msg::kMsgFieldNumber;
-const int msg::kUsernameFieldNumber;
+const int No1Request::kMsgFieldNumber;
+const int No1Request::kUsernameFieldNumber;
 #endif  // !_MSC_VER
 
-msg::msg()
+No1Request::No1Request()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void msg::InitAsDefaultInstance() {
+void No1Request::InitAsDefaultInstance() {
 }
 
-msg::msg(const msg& from)
+No1Request::No1Request(const No1Request& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void msg::SharedCtor() {
+void No1Request::SharedCtor() {
   _cached_size_ = 0;
   msg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   username_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-msg::~msg() {
+No1Request::~No1Request() {
   SharedDtor();
 }
 
-void msg::SharedDtor() {
+void No1Request::SharedDtor() {
   if (msg_ != &::google::protobuf::internal::kEmptyString) {
     delete msg_;
   }
@@ -445,28 +445,28 @@ void msg::SharedDtor() {
   }
 }
 
-void msg::SetCachedSize(int size) const {
+void No1Request::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* msg::descriptor() {
+const ::google::protobuf::Descriptor* No1Request::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return msg_descriptor_;
+  return No1Request_descriptor_;
 }
 
-const msg& msg::default_instance() {
+const No1Request& No1Request::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_protocol_2eproto();
   return *default_instance_;
 }
 
-msg* msg::default_instance_ = NULL;
+No1Request* No1Request::default_instance_ = NULL;
 
-msg* msg::New() const {
-  return new msg;
+No1Request* No1Request::New() const {
+  return new No1Request;
 }
 
-void msg::Clear() {
+void No1Request::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_msg()) {
       if (msg_ != &::google::protobuf::internal::kEmptyString) {
@@ -483,7 +483,7 @@ void msg::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool msg::MergePartialFromCodedStream(
+bool No1Request::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -538,7 +538,7 @@ bool msg::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void msg::SerializeWithCachedSizes(
+void No1Request::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string msg = 1;
   if (has_msg()) {
@@ -564,7 +564,7 @@ void msg::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* msg::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* No1Request::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string msg = 1;
   if (has_msg()) {
@@ -593,7 +593,7 @@ void msg::SerializeWithCachedSizes(
   return target;
 }
 
-int msg::ByteSize() const {
+int No1Request::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -623,10 +623,10 @@ int msg::ByteSize() const {
   return total_size;
 }
 
-void msg::MergeFrom(const ::google::protobuf::Message& from) {
+void No1Request::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const msg* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const msg*>(
+  const No1Request* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const No1Request*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -635,7 +635,7 @@ void msg::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void msg::MergeFrom(const msg& from) {
+void No1Request::MergeFrom(const No1Request& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_msg()) {
@@ -648,25 +648,25 @@ void msg::MergeFrom(const msg& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void msg::CopyFrom(const ::google::protobuf::Message& from) {
+void No1Request::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void msg::CopyFrom(const msg& from) {
+void No1Request::CopyFrom(const No1Request& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool msg::IsInitialized() const {
+bool No1Request::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   return true;
 }
 
-void msg::Swap(msg* other) {
+void No1Request::Swap(No1Request* other) {
   if (other != this) {
     std::swap(msg_, other->msg_);
     std::swap(username_, other->username_);
@@ -676,11 +676,11 @@ void msg::Swap(msg* other) {
   }
 }
 
-::google::protobuf::Metadata msg::GetMetadata() const {
+::google::protobuf::Metadata No1Request::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = msg_descriptor_;
-  metadata.reflection = msg_reflection_;
+  metadata.descriptor = No1Request_descriptor_;
+  metadata.reflection = No1Request_reflection_;
   return metadata;
 }
 

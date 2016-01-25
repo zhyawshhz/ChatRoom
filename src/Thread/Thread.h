@@ -2,8 +2,10 @@
 #define No1_Thread_Thread_h
 
 #include <pthread.h>
+#include <boost/shared_ptr.hpp>
 
 #include "Thread/ThrdObj.h"
+#include "Config/Config.h"
 
 class No1Thread
 {

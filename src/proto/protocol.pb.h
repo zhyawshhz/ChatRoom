@@ -32,7 +32,7 @@ void protobuf_AssignDesc_protocol_2eproto();
 void protobuf_ShutdownFile_protocol_2eproto();
 
 class login_req;
-class msg;
+class No1Request;
 
 // ===================================================================
 
@@ -138,14 +138,14 @@ class login_req : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class msg : public ::google::protobuf::Message {
+class No1Request : public ::google::protobuf::Message {
  public:
-  msg();
-  virtual ~msg();
+  No1Request();
+  virtual ~No1Request();
 
-  msg(const msg& from);
+  No1Request(const No1Request& from);
 
-  inline msg& operator=(const msg& from) {
+  inline No1Request& operator=(const No1Request& from) {
     CopyFrom(from);
     return *this;
   }
@@ -159,17 +159,17 @@ class msg : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const msg& default_instance();
+  static const No1Request& default_instance();
 
-  void Swap(msg* other);
+  void Swap(No1Request* other);
 
   // implements Message ----------------------------------------------
 
-  msg* New() const;
+  No1Request* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const msg& from);
-  void MergeFrom(const msg& from);
+  void CopyFrom(const No1Request& from);
+  void MergeFrom(const No1Request& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -216,7 +216,7 @@ class msg : public ::google::protobuf::Message {
   inline ::std::string* release_username();
   inline void set_allocated_username(::std::string* username);
 
-  // @@protoc_insertion_point(class_scope:msg)
+  // @@protoc_insertion_point(class_scope:No1Request)
  private:
   inline void set_has_msg();
   inline void clear_has_msg();
@@ -236,7 +236,7 @@ class msg : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_protocol_2eproto();
 
   void InitAsDefaultInstance();
-  static msg* default_instance_;
+  static No1Request* default_instance_;
 };
 // ===================================================================
 
@@ -387,56 +387,56 @@ inline void login_req::set_allocated_password(::std::string* password) {
 
 // -------------------------------------------------------------------
 
-// msg
+// No1Request
 
 // required string msg = 1;
-inline bool msg::has_msg() const {
+inline bool No1Request::has_msg() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void msg::set_has_msg() {
+inline void No1Request::set_has_msg() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void msg::clear_has_msg() {
+inline void No1Request::clear_has_msg() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void msg::clear_msg() {
+inline void No1Request::clear_msg() {
   if (msg_ != &::google::protobuf::internal::kEmptyString) {
     msg_->clear();
   }
   clear_has_msg();
 }
-inline const ::std::string& msg::msg() const {
+inline const ::std::string& No1Request::msg() const {
   return *msg_;
 }
-inline void msg::set_msg(const ::std::string& value) {
+inline void No1Request::set_msg(const ::std::string& value) {
   set_has_msg();
   if (msg_ == &::google::protobuf::internal::kEmptyString) {
     msg_ = new ::std::string;
   }
   msg_->assign(value);
 }
-inline void msg::set_msg(const char* value) {
+inline void No1Request::set_msg(const char* value) {
   set_has_msg();
   if (msg_ == &::google::protobuf::internal::kEmptyString) {
     msg_ = new ::std::string;
   }
   msg_->assign(value);
 }
-inline void msg::set_msg(const char* value, size_t size) {
+inline void No1Request::set_msg(const char* value, size_t size) {
   set_has_msg();
   if (msg_ == &::google::protobuf::internal::kEmptyString) {
     msg_ = new ::std::string;
   }
   msg_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* msg::mutable_msg() {
+inline ::std::string* No1Request::mutable_msg() {
   set_has_msg();
   if (msg_ == &::google::protobuf::internal::kEmptyString) {
     msg_ = new ::std::string;
   }
   return msg_;
 }
-inline ::std::string* msg::release_msg() {
+inline ::std::string* No1Request::release_msg() {
   clear_has_msg();
   if (msg_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -446,7 +446,7 @@ inline ::std::string* msg::release_msg() {
     return temp;
   }
 }
-inline void msg::set_allocated_msg(::std::string* msg) {
+inline void No1Request::set_allocated_msg(::std::string* msg) {
   if (msg_ != &::google::protobuf::internal::kEmptyString) {
     delete msg_;
   }
@@ -460,53 +460,53 @@ inline void msg::set_allocated_msg(::std::string* msg) {
 }
 
 // optional string username = 2;
-inline bool msg::has_username() const {
+inline bool No1Request::has_username() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void msg::set_has_username() {
+inline void No1Request::set_has_username() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void msg::clear_has_username() {
+inline void No1Request::clear_has_username() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void msg::clear_username() {
+inline void No1Request::clear_username() {
   if (username_ != &::google::protobuf::internal::kEmptyString) {
     username_->clear();
   }
   clear_has_username();
 }
-inline const ::std::string& msg::username() const {
+inline const ::std::string& No1Request::username() const {
   return *username_;
 }
-inline void msg::set_username(const ::std::string& value) {
+inline void No1Request::set_username(const ::std::string& value) {
   set_has_username();
   if (username_ == &::google::protobuf::internal::kEmptyString) {
     username_ = new ::std::string;
   }
   username_->assign(value);
 }
-inline void msg::set_username(const char* value) {
+inline void No1Request::set_username(const char* value) {
   set_has_username();
   if (username_ == &::google::protobuf::internal::kEmptyString) {
     username_ = new ::std::string;
   }
   username_->assign(value);
 }
-inline void msg::set_username(const char* value, size_t size) {
+inline void No1Request::set_username(const char* value, size_t size) {
   set_has_username();
   if (username_ == &::google::protobuf::internal::kEmptyString) {
     username_ = new ::std::string;
   }
   username_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* msg::mutable_username() {
+inline ::std::string* No1Request::mutable_username() {
   set_has_username();
   if (username_ == &::google::protobuf::internal::kEmptyString) {
     username_ = new ::std::string;
   }
   return username_;
 }
-inline ::std::string* msg::release_username() {
+inline ::std::string* No1Request::release_username() {
   clear_has_username();
   if (username_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -516,7 +516,7 @@ inline ::std::string* msg::release_username() {
     return temp;
   }
 }
-inline void msg::set_allocated_username(::std::string* username) {
+inline void No1Request::set_allocated_username(::std::string* username) {
   if (username_ != &::google::protobuf::internal::kEmptyString) {
     delete username_;
   }

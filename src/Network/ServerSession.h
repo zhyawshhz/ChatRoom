@@ -8,6 +8,10 @@
 #ifndef CHATROOM_NETWORK_SERVERSESSION_H_
 #define CHATROOM_NETWORK_SERVERSESSION_H_
 
+#include <string>
+
+class No1EpollServer;
+
 class No1ServerSession
 {
 public:
