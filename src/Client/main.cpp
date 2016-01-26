@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 int main(int argc, char** argv)
 {
@@ -25,8 +26,8 @@ int main(int argc, char** argv)
 			session.run();
 			return 0;
 		}
+		waitpid(p, NULL, 0);
 	}
-	wait(NULL);
 	return 0;
 }
 
