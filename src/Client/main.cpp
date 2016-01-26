@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 			return 0;
 		}
 	}
+	wait(NULL);
 	return 0;
 }
 
