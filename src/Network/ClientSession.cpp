@@ -11,6 +11,7 @@
 #include "Thread/Thread.h"
 #include "Log/Log.h"
 #include "proto/protocol.pb.h"
+#include "Util/Random.h"
 
 
 #include <iostream>
@@ -18,6 +19,9 @@
 No1ClientSession::No1ClientSession(const std::string &addr, const int port)
 : m_stop(true)
 {
+	char user_name[12+1];
+	get_random_str(user_name, 12);
+	m_user_name = std::string(user_name, 12);
 	m_sock = boost::make_shared<No1SocketClient>(addr, port);
 }
 
@@ -33,6 +37,8 @@ No1ClientSession::run()
 {
 	m_send_thrd = boost::make_shared<No1Thread>(0, this);
 	m_recv_thrd = boost::make_shared<No1Thread>(1, this);
+	m_send_thrd->join();
+	m_recv_thrd->join();
 	return true;
 }
 
@@ -85,6 +91,28 @@ No1ClientSession::handle_recv()
 bool
 No1ClientSession::handle_send()
 {
+	srand(static_cast<int>(time(0)));
+	int str_len = rand() % 512;
+	char send_msg[str_len+1];
+	get_random_str(send_msg, str_len);
+
+	No1Request request;
+	request.set_msg(send_msg);
+	request.set_username(m_user_name);
+
+	int bodylen = request.ByteSize();
+	char send_buffer[8+bodylen];
+	(*((int*)send_buffer)) = bodylen;
+	(*((int*)send_buffer+4)) = 1;
+	request.SerializeToArray(send_buffer+8, bodylen);
+
+	if (!m_sock->send(send_buffer, bodylen+8))
+	{
+		GLOBAL_LOG_SEV(error, "socket is close!!!!");
+		close();
+		return false;
+	}
+
 	return true;
 }
 

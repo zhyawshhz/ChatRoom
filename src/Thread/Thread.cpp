@@ -22,15 +22,17 @@ No1Thread::~No1Thread()
 void*
 No1Thread::threadFunc(void* args)
 {
-	if (m_proc_obj)
+	No1Thread* thisptr = ((No1Thread*)args);
+	if (thisptr->m_proc_obj)
 	{
-		return m_proc_obj->threadFunc();
+		thisptr->m_proc_obj->threadFunc(m_id);
 	}else{
 		GLOBAL_LOG_SEV(error, "NO PROC OBJ: " << m_thrd_id);
 		return NULL;
 	}
 	return NULL;
 }
+
 
 bool
 No1Thread::join()

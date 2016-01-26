@@ -38,6 +38,7 @@ private:
 
 private:
 	bool										m_stop;
+	std::string									m_user_name;
 	boost::shared_ptr<No1Thread>				m_send_thrd;
 	boost::shared_ptr<No1Thread>				m_recv_thrd;
 	boost::shared_ptr<No1SocketClient>			m_sock;

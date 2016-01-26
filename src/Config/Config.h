@@ -12,6 +12,7 @@ public:
 
 	bool parse();
 
+	std::string &get_server_addr(){return m_addr;}
 	int get_server_port()const{return m_port;}
 	int get_log_level()const{return m_level;}
 	bool get_log_toconsole()const {return m_toconsole;}
@@ -19,6 +20,8 @@ public:
 	int  get_handle_thrd_num()const{return m_handle_thrd_num;}
 	int	 get_process_num()const{return m_process_num;}
 
+private:
+	std::string				m_addr;
 	int						m_port;
 	int						m_level;
 	bool					m_tofile;

@@ -149,13 +149,6 @@ No1EpollServer::threadFunc(const int id)
 
 
 bool
-No1EpollServer::proc_msg()
-{
-	return true;
-}
-
-
-bool
 No1EpollServer::proc_client()
 {
 	int num;
@@ -285,7 +278,7 @@ No1EpollServer::start()
 
 
 void
-No1EpollServer::add_msg(const msg &mm)
+No1EpollServer::add_msg(const No1Request &mm)
 {
 	m_read_msgs.push(mm);
 	m_cond_var->signal();
@@ -304,7 +297,7 @@ No1EpollServer::proc_msg()
 			m_lock->unlock();
 			continue;
 		}
-		msg mm = m_read_msgs.front();
+		No1Request mm = m_read_msgs.front();
 		char buffer[mm.ByteSize()];
 		mm.SerializeToArray(buffer, mm.ByteSize());
 		for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++ itr)

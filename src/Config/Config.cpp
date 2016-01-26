@@ -71,6 +71,11 @@ No1Config::parse()
 
 	po::notify(vm);
 
+	if (vm.count("server.addr"))
+	{
+		m_addr = vm["server.addr"].as<std::string>();
+	}
+
 	if (vm.count("server.port"))
 	{
 		m_port = vm["server.port"].as<int>();
